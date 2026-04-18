@@ -811,162 +811,184 @@ function Hrady({go}){
 }
 
 function Kontakt({go}){
-  const [sent,setSent]=useState(false);
-  const [mistoAkce,setMistoAkce]=useState("");
-  const submit=e=>{e.preventDefault();setSent(true);setTimeout(()=>setSent(false),5000)};
-  const inputStyle={width:"100%",background:SRFL,border:`1px solid ${BRD}`,borderRadius:10,
-    padding:"12px 13px",fontSize:14,outline:"none",transition:"border .15s",boxSizing:"border-box"};
-  const fi=e=>{e.target.style.border=`1px solid ${P}`};
-  const fo=e=>{e.target.style.border=`1px solid ${BRD}`};
-  return(
-    <main id="main" style={{paddingTop:88,background:BG,minHeight:"100vh"}}>
-      <header style={{background:"linear-gradient(135deg,#1a0533 0%,#2d0b4e 60%,#1a1a2e 100%)",
-        padding:"62px 5% 78px",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",top:-60,right:-60,width:260,height:260,borderRadius:"50%",
-          background:"radial-gradient(circle,rgba(124,58,237,.3),transparent 70%)",pointerEvents:"none"}}/>
-        <div style={{maxWidth:1200,margin:"0 auto",position:"relative",zIndex:1}}>
-          <Chip bg="rgba(196,181,253,.18)" color="#c4b5fd">Plánujete oslavu?</Chip>
-          <h1 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",
-            fontSize:"clamp(34px,6vw,60px)",fontWeight:900,color:"#fff",
-            letterSpacing:-1.5,margin:"14px 0 10px"}}>
-            Rezervace pronájmu<br/><span style={{color:"#c4b5fd"}}>skákacího hradu</span>
-          </h1>
-          <p style={{color:"rgba(255,255,255,.58)",fontSize:17,maxWidth:440,lineHeight:1.7,marginBottom:24}}>
-            Pro každý pronájem uzavíráme smlouvu o krátkodobém pronájmu movité věci.
-          </p>
-          <div className="ctar" style={{display:"flex",gap:11}}>
-            <Btn href="tel:+420774351097" size="md">📞 +420 774 351 097</Btn>
-            <Btn href="mailto:info@hophrad.cz" variant="ghost" size="md">✉️ info@hophrad.cz</Btn>
-          </div>
-        </div>
-      </header>
+  const [sent,setSent]=useState(false);
+  const [loading,setLoading]=useState(false); // <--- TOTO CHYBĚLO
+  const [mistoAkce,setMistoAkce]=useState("");
 
-      {/* Kalkulačka dopravy — na kontaktu omezena na max 680px */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"52px 5% 0"}}>
-        <div style={{marginBottom:10}}>
-          <Chip>Krok 1 — Zjistěte cenu dopravy</Chip>
-        </div>
-        {/* maxWidth:680 zabraňuje přílišné šířce na velkých obrazovkách */}
-        <div style={{maxWidth:680}}>
-          <KalkulackaDopravy/>
-        </div>
-      </div>
+  // TOTO JE OPRAVENÁ FUNKCE PRO ODESLÁNÍ
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-      <div id="kontakt-formular" className="kgrid" style={{maxWidth:1200,margin:"0 auto",
-        padding:"40px 5% 70px",display:"grid",gridTemplateColumns:"1.4fr 1fr",gap:42,alignItems:"start"}}>
-        <section>
-          <div style={{marginBottom:8}}>
-            <Chip>Krok 2 — Odešlete poptávku</Chip>
-          </div>
-          <div style={{background:SRF,borderRadius:22,padding:"36px 32px",
-            boxShadow:"0 16px 50px rgba(0,0,0,.05)",border:`1px solid ${BRD}`}}>
-            <h2 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:22,fontWeight:800,
-              marginBottom:24,display:"flex",alignItems:"center",gap:10}}>📅 Rezervační formulář</h2>
-            {sent?(
-              <div style={{background:GBG,borderRadius:16,padding:"28px 22px",textAlign:"center"}}>
-                <span style={{fontSize:44,display:"block",marginBottom:12}}>✅</span>
-                <h3 style={{color:GFG,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:19,fontWeight:800}}>Odesláno!</h3>
-                <p style={{color:"#166534aa",marginTop:8,fontSize:14}}>Ozveme se vám co nejdříve.</p>
-              </div>
-            ):(
-              <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-  <div className="col2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-    <div>
-      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Jméno a příjmení</label>
-      <input name="user_name" required type="text" placeholder="Jan Novák" autoComplete="name" style={inputStyle} onFocus={fi} onBlur={fo} />
-    </div>
-    <div>
-      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>E-mail</label>
-      <input name="user_email" required type="email" placeholder="jan@example.cz" autoComplete="email" style={inputStyle} onFocus={fi} onBlur={fo} />
-    </div>
-  </div>
-  <div className="col2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-    <div>
-      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Telefon</label>
-      <input name="user_phone" type="tel" placeholder="+420 774 351 097" autoComplete="tel" style={inputStyle} onFocus={fi} onBlur={fo} />
-    </div>
-    <div>
-      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Datum akce</label>
-      <input name="action_date" required type="date" min={new Date().toISOString().split("T")[0]} style={inputStyle} onFocus={fi} onBlur={fo} />
-    </div>
-  </div>
-  {/* Kolonka Místo akce — name="action_place" zajistí přenos do e-mailu */}
-  <div>
-    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>
-      Místo akce
-      <span style={{ fontWeight: 400, color: FAINT, marginLeft: 6 }}>(vyplňte z kalkulačky výše nebo ručně)</span>
-    </label>
-    <input
-      name="action_place"
-      type="text"
-      id="misto-akce"
-      value={mistoAkce}
-      onChange={e => setMistoAkce(e.target.value)}
-      placeholder="Ulice a číslo, město, PSČ"
-      style={inputStyle}
-      onFocus={fi}
-      onBlur={fo}
-    />
-  </div>
-  <div>
-    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Zpráva (počet dětí, speciální požadavky…)</label>
-    <textarea name="message" rows={4} placeholder="Počet dětí, speciální požadavky..."
-      style={{ ...inputStyle, resize: "vertical", borderRadius: 10 }} onFocus={fi} onBlur={fo} />
-  </div>
-  <div className="ctar" style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 2, flexWrap: "wrap" }}>
-    {/* Tlačítko teď reaguje na stav loading */}
-    <Btn disabled={loading}>
-      {loading ? "Odesílám..." : "Odeslat poptávku →"}
-    </Btn>
-    <span style={{ color: FAINT, fontSize: 13 }}>✅ Odpovídáme rychle</span>
-  </div>
-</form>
-            )}
-          </div>
-        </section>
+    emailjs.sendForm(
+      'service_48f6if5',   // <--- NEZAPOMEŇ ZMĚNIT ZA SVÉ ID z EmailJS
+      'template_txu1qq1',  // <--- NEZAPOMEŇ ZMĚNIT ZA SVÉ ID z EmailJS
+      e.target, 
+      'OZTKiG4izTc_oxx74'    // <--- NEZAPOMEŇ ZMĚNIT ZA SVÉ ID z EmailJS
+    )
+    .then(() => {
+      setSent(true);
+      setLoading(false);
+      e.target.reset(); // Vymaže formulář po odeslání
+      setMistoAkce("");
+      setTimeout(() => setSent(false), 5000);
+    })
+    .catch((err) => {
+      console.error("Chyba:", err);
+      alert("Něco se nepovedlo. Zkuste nám prosím zavolat.");
+      setLoading(false);
+    });
+  };
 
-        <aside style={{display:"flex",flexDirection:"column",gap:11}}>
-          {[
-            ["📞","Zavolejte nám",<a key="t" href="tel:+420774351097" style={{color:P,fontWeight:800,fontSize:17}}>+420 774 351 097</a>],
-            ["✉️","Napište nám",<a key="e" href="mailto:info@hophrad.cz" style={{color:P,fontWeight:800,fontSize:16}}>info@hophrad.cz</a>],
-          ].map(([icon,title,content])=>(
-            <div key={title} style={{background:SRF,borderRadius:13,padding:"14px 16px",
-              display:"flex",alignItems:"flex-start",gap:12,border:`1px solid ${BRD}`}}>
-              <div style={{width:38,height:38,borderRadius:10,background:PL,
-                display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,flexShrink:0}}>{icon}</div>
-              <div>
-                <p style={{fontSize:11,fontWeight:700,color:FAINT,letterSpacing:.5,marginBottom:3,textTransform:"uppercase"}}>{title}</p>
-                {content}
-              </div>
-            </div>
-          ))}
-          <div style={{background:PL,borderRadius:13,padding:"14px 16px",border:`1px solid ${PLM}`}}>
-            <h3 style={{fontWeight:800,color:PD,marginBottom:7,fontSize:13,
-              display:"flex",alignItems:"center",gap:6}}>🛡️ Certifikát bezpečnosti</h3>
-            <p style={{fontSize:13,color:MUT,lineHeight:1.65,marginBottom:10}}>
-              Splňuje <strong>EN 14960-1:2019</strong> a <strong>ISO 9001:2015</strong>.
-              PVC Terpaulin 1000D.
-            </p>
-            {/* Certifikát — nové okno */}
-            <a href={I_CERT} target="_blank" rel="noopener noreferrer"
-              style={{display:"inline-flex",alignItems:"center",gap:5,color:P,fontWeight:700,fontSize:13}}>
-              📄 Zobrazit CE certifikát
-            </a>
-          </div>
-          <div style={{background:SRFM,borderRadius:13,padding:"14px 16px",border:`1px solid ${PLM}`}}>
-            <h3 style={{fontWeight:800,color:PD,marginBottom:7,fontSize:13}}>🚚 Doprava</h3>
-            <p style={{fontSize:13,color:MUT,lineHeight:1.65}}>
-              Prvních <strong>10 km od Liberce zdarma</strong>. Vzdálenější místa dle kalkulačky dopravy výše.
-            </p>
-          </div>
-          <p style={{color:FAINT,fontSize:12,lineHeight:1.72,paddingTop:2}}>
-            IČO: 21356220 · Tobiáš Novák<br/>
-            Při každém pronájmu uzavíráme smlouvu o krátkodobém pronájmu movité věci.
-          </p>
-        </aside>
-      </div>
-    </main>
-  );
+  const inputStyle={width:"100%",background:SRFL,border:`1px solid ${BRD}`,borderRadius:10,
+    padding:"12px 13px",fontSize:14,outline:"none",transition:"border .15s",boxSizing:"border-box"};
+  const fi=e=>{e.target.style.border=`1px solid ${P}`};
+  const fo=e=>{e.target.style.border=`1px solid ${BRD}`};
+
+  return(
+    <main id="main" style={{paddingTop:88,background:BG,minHeight:"100vh"}}>
+      <header style={{background:"linear-gradient(135deg,#1a0533 0%,#2d0b4e 60%,#1a1a2e 100%)",
+        padding:"62px 5% 78px",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:-60,right:-60,width:260,height:260,borderRadius:"50%",
+          background:"radial-gradient(circle,rgba(124,58,237,.3),transparent 70%)",pointerEvents:"none"}}/>
+        <div style={{maxWidth:1200,margin:"0 auto",position:"relative",zIndex:1}}>
+          <Chip bg="rgba(196,181,253,.18)" color="#c4b5fd">Plánujete oslavu?</Chip>
+          <h1 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",
+            fontSize:"clamp(34px,6vw,60px)",fontWeight:900,color:"#fff",
+            letterSpacing:-1.5,margin:"14px 0 10px"}}>
+            Rezervace pronájmu<br/><span style={{color:"#c4b5fd"}}>skákacího hradu</span>
+          </h1>
+          <p style={{color:"rgba(255,255,255,.58)",fontSize:17,maxWidth:440,lineHeight:1.7,marginBottom:24}}>
+            Pro každý pronájem uzavíráme smlouvu o krátkodobém pronájmu movité věci.
+          </p>
+          <div className="ctar" style={{display:"flex",gap:11}}>
+            <Btn href="tel:+420774351097" size="md">📞 +420 774 351 097</Btn>
+            <Btn href="mailto:info@hophrad.cz" variant="ghost" size="md">✉️ info@hophrad.cz</Btn>
+          </div>
+        </div>
+      </header>
+
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"52px 5% 0"}}>
+        <div style={{marginBottom:10}}>
+          <Chip>Krok 1 — Zjistěte cenu dopravy</Chip>
+        </div>
+        <div style={{maxWidth:680}}>
+          <KalkulackaDopravy/>
+        </div>
+      </div>
+
+      <div id="kontakt-formular" className="kgrid" style={{maxWidth:1200,margin:"0 auto",
+        padding:"40px 5% 70px",display:"grid",gridTemplateColumns:"1.4fr 1fr",gap:42,alignItems:"start"}}>
+        <section>
+          <div style={{marginBottom:8}}>
+            <Chip>Krok 2 — Odešlete poptávku</Chip>
+          </div>
+          <div style={{background:SRF,borderRadius:22,padding:"36px 32px",
+            boxShadow:"0 16px 50px rgba(0,0,0,.05)",border:`1px solid ${BRD}`}}>
+            <h2 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:22,fontWeight:800,
+              marginBottom:24,display:"flex",alignItems:"center",gap:10}}>📅 Rezervační formulář</h2>
+            {sent?(
+              <div style={{background:GBG,borderRadius:16,padding:"28px 22px",textAlign:"center"}}>
+                <span style={{fontSize:44,display:"block",marginBottom:12}}>✅</span>
+                <h3 style={{color:GFG,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:19,fontWeight:800}}>Odesláno!</h3>
+                <p style={{color:"#166534aa",marginTop:8,fontSize:14}}>Ozveme se vám co nejdříve.</p>
+              </div>
+            ):(
+              <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div className="col2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Jméno a příjmení</label>
+                    <input name="user_name" required type="text" placeholder="Jan Novák" autoComplete="name" style={inputStyle} onFocus={fi} onBlur={fo} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>E-mail</label>
+                    <input name="user_email" required type="email" placeholder="jan@example.cz" autoComplete="email" style={inputStyle} onFocus={fi} onBlur={fo} />
+                  </div>
+                </div>
+                <div className="col2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Telefon</label>
+                    <input name="user_phone" type="tel" placeholder="+420 774 351 097" autoComplete="tel" style={inputStyle} onFocus={fi} onBlur={fo} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Datum akce</label>
+                    <input name="action_date" required type="date" min={new Date().toISOString().split("T")[0]} style={inputStyle} onFocus={fi} onBlur={fo} />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>
+                    Místo akce
+                    <span style={{ fontWeight: 400, color: FAINT, marginLeft: 6 }}>(vyplňte z kalkulačky výše nebo ručně)</span>
+                  </label>
+                  <input
+                    name="action_place"
+                    type="text"
+                    id="misto-akce"
+                    value={mistoAkce}
+                    onChange={e => setMistoAkce(e.target.value)}
+                    placeholder="Ulice a číslo, město, PSČ"
+                    style={inputStyle}
+                    onFocus={fi}
+                    onBlur={fo}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Zpráva (počet dětí, speciální požadavky…)</label>
+                  <textarea name="message" rows={4} placeholder="Počet dětí, speciální požadavky..."
+                    style={{ ...inputStyle, resize: "vertical", borderRadius: 10 }} onFocus={fi} onBlur={fo} />
+                </div>
+                <div className="ctar" style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 2, flexWrap: "wrap" }}>
+                  <Btn disabled={loading}>
+                    {loading ? "Odesílám..." : "Odeslat poptávku →"}
+                  </Btn>
+                  <span style={{ color: FAINT, fontSize: 13 }}>✅ Odpovídáme rychle</span>
+                </div>
+              </form>
+            )}
+          </div>
+        </section>
+
+        <aside style={{display:"flex",flexDirection:"column",gap:11}}>
+          {[
+            ["📞","Zavolejte nám",<a key="t" href="tel:+420774351097" style={{color:P,fontWeight:800,fontSize:17}}>+420 774 351 097</a>],
+            ["✉️","Napište nám",<a key="e" href="mailto:info@hophrad.cz" style={{color:P,fontWeight:800,fontSize:16}}>info@hophrad.cz</a>],
+          ].map(([icon,title,content])=>(
+            <div key={title} style={{background:SRF,borderRadius:13,padding:"14px 16px",
+              display:"flex",alignItems:"flex-start",gap:12,border:`1px solid ${BRD}`}}>
+              <div style={{width:38,height:38,borderRadius:10,background:PL,
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,flexShrink:0}}>{icon}</div>
+              <div>
+                <p style={{fontSize:11,fontWeight:700,color:FAINT,letterSpacing:.5,marginBottom:3,textTransform:"uppercase"}}>{title}</p>
+                {content}
+              </div>
+            </div>
+          ))}
+          <div style={{background:PL,borderRadius:13,padding:"14px 16px",border:`1px solid ${PLM}`}}>
+            <h3 style={{fontWeight:800,color:PD,marginBottom:7,fontSize:13,
+              display:"flex",alignItems:"center",gap:6}}>🛡️ Certifikát bezpečnosti</h3>
+            <p style={{fontSize:13,color:MUT,lineHeight:1.65,marginBottom:10}}>
+              Splňuje <strong>EN 14960-1:2019</strong> a <strong>ISO 9001:2015</strong>.
+              PVC Terpaulin 1000D.
+            </p>
+            <a href={I_CERT} target="_blank" rel="noopener noreferrer"
+              style={{display:"inline-flex",alignItems:"center",gap:5,color:P,fontWeight:700,fontSize:13}}>
+              📄 Zobrazit CE certifikát
+            </a>
+          </div>
+          <div style={{background:SRFM,borderRadius:13,padding:"14px 16px",border:`1px solid ${PLM}`}}>
+            <h3 style={{fontWeight:800,color:PD,marginBottom:7,fontSize:13}}>🚚 Doprava</h3>
+            <p style={{fontSize:13,color:MUT,lineHeight:1.65}}>
+              Prvních <strong>10 km od Liberce zdarma</strong>. Vzdálenější místa dle kalkulačky dopravy výše.
+            </p>
+          </div>
+          <p style={{color:FAINT,fontSize:12,lineHeight:1.72,paddingTop:2}}>
+            IČO: 21356220 · Tobiáš Novák<br/>
+            Při každém pronájmu uzavíráme smlouvu o krátkodobém pronájmu movité věci.
+          </p>
+        </aside>
+      </div>
+    </main>
+  );
 }
 
 function GdprPage({go}){
