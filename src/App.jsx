@@ -13,8 +13,6 @@
 
 import { useState, useEffect, useRef } from "react"; // Přidej useRef, pokud tam není
 import emailjs from "@emailjs/browser"; // <--- TENTO ŘÁDEK PŘIDEJ SEM
-import KalkulackaDopravy from "./KalkulackaDopravy";
-// ... zbytek tvých importů (loga, obrázky atd.)
 
 import { useState, useEffect } from "react";
 import KalkulackaDopravy from "./KalkulackaDopravy";
