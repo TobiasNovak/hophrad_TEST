@@ -1,45 +1,40 @@
 // App.jsx — HopHrad.cz
-// Umístěte soubory z uploads do src/assets/ dle tohoto klíče:
-//   1_vetsi.png                             → src/assets/logo.png
-//   hrad1_-f6c292b8.png                     → src/assets/hrad1.png
-//   hrad2_-9aa981a6.png                     → src/assets/hrad2.png
-//   hrad3_-2230a6f8.png                     → src/assets/hrad3.png
-//   hrad5__png-996ed402.png                 → src/assets/hrad5.png
-//   IMG_3422-76d7ac56.png                   → src/assets/img3422.png
-//   IMG_3458-2f5992ca.png                   → src/assets/img3458.png
-//   IMG_3474-eade0e88.png                   → src/assets/img3474.png
-//   Gemini_Generated_Image_nlzkc6...png     → src/assets/gem1.png
-//   Gemini_Generated_Image_bt3dtr...png     → src/assets/gem2.png
-//   Gemini_Generated_Image_gkcl8f...png     → src/assets/gem3.png
-//   Gemini_Generated_Image_h1j2vq...png     → src/assets/gem4.png
-//   Gemini_Generated_Image_vm4gkz...png     → src/assets/gem5.png
-//   DOC_1.pdf                               → src/assets/ce-certifikat.pdf
-//   Kopie_navrhu_Hophrad...png              → src/assets/flyer.png
+// Změny oproti předchozí verzi:
+//   - Logo: větší (56px), mix-blend-mode screen (průhledné pozadí)
+//   - TrustBar: lepší spacing od rozdělovačů
+//   - Certifikát: všude otevřít v novém okně místo stahování
+//   - 2. den sleva: -25 % (bylo -50 %)
+//   - Recenze: "a hlavně dětí!"
+//   - Castle karty: celá karta je klikatelná
+//   - Odstraněn banner "LEGO Hrad je dostupný"
+//   - LEGO váha: 120 kg, kapacita: až 10 dětí
+//   - Kalkulačka v kontaktu: maxWidth 680px
+//   - Formulář: nová kolonka "Místo akce"
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import KalkulackaDopravy from "./KalkulackaDopravy";
 
-import I_LOGO   from "./assets/logo.png";
-import I_HRAD1  from "./assets/hrad1.png";
-import I_HRAD2  from "./assets/hrad2.png";
-import I_HRAD3  from "./assets/hrad3.png";
-import I_HRAD5  from "./assets/hrad5.png";
+import I_LOGO    from "./assets/logo.png";
+import I_HRAD1   from "./assets/hrad1.png";
+import I_HRAD2   from "./assets/hrad2.png";
+import I_HRAD3   from "./assets/hrad3.png";
+import I_HRAD5   from "./assets/hrad5.png";
 import I_IMG3422 from "./assets/img3422.png";
 import I_IMG3458 from "./assets/img3458.png";
 import I_IMG3474 from "./assets/img3474.png";
-import I_GEM1   from "./assets/gem1.png";
-import I_GEM2   from "./assets/gem2.png";
-import I_GEM3   from "./assets/gem3.png";
-import I_GEM4   from "./assets/gem4.png";
-import I_GEM5   from "./assets/gem5.png";
-import I_CERT   from "./assets/ce-certifikat.pdf";
+import I_GEM1    from "./assets/gem1.png";
+import I_GEM2    from "./assets/gem2.png";
+import I_GEM3    from "./assets/gem3.png";
+import I_GEM4    from "./assets/gem4.png";
+import I_GEM5    from "./assets/gem5.png";
+import I_CERT    from "./assets/ce-certifikat.pdf";
 
 const P="#7C3AED",PD="#5B21B6",PL="#EDE9FE",PLM="#DDD6FE";
 const BG="#FAFAFA",SRF="#FFFFFF",SRFL="#F7F5FF",SRFM="#F0EDFD";
 const TX="#18181B",MUT="#52525B",FAINT="#A1A1AA",BRD="#E4E0F5";
 const GBG="#DCFCE7",GFG="#166534",YBG="#FEF3C7",YFG="#92400E";
 
-const CSS = `
+const CSS=`
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -110,6 +105,18 @@ function Chip({children,bg=PL,color=PD}){
     fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{children}</span>;
 }
 
+// Odkaz na certifikát — otevřít v novém okně, ne stahovat
+function CertLink({style,children}){
+  return(
+    <a href={I_CERT} target="_blank" rel="noopener noreferrer"
+      style={{display:"inline-flex",alignItems:"center",gap:8,background:PL,
+        color:PD,padding:"11px 18px",borderRadius:10,fontWeight:800,fontSize:13,
+        border:`1px solid ${PLM}`,fontFamily:"'Plus Jakarta Sans',sans-serif",...style}}>
+      {children||"📄 Zobrazit CE certifikát EN 14960"}
+    </a>
+  );
+}
+
 function NavBar({page,go}){
   const solid=useScroll(50);
   const [open,setOpen]=useState(false);
@@ -122,12 +129,16 @@ function NavBar({page,go}){
       backdropFilter:solid?"blur(18px)":"blur(0px)",
       borderBottom:solid?`1px solid ${BRD}`:"none",
       boxShadow:solid?"0 2px 16px rgba(124,58,237,.07)":"none",transition:"all .3s"}}>
-      <nav style={{maxWidth:1200,margin:"0 auto",padding:"0 5%",height:68,
+      <nav style={{maxWidth:1200,margin:"0 auto",padding:"0 5%",height:72,
         display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+
+        {/* Logo — mix-blend-mode:screen odstraní černé pozadí obrázku */}
         <button onClick={()=>go("home")} style={{background:"none",border:"none",cursor:"pointer",
-          display:"flex",alignItems:"center",gap:10}}>
-          <img src={I_LOGO} alt="HopHrad logo" style={{height:44,width:"auto",objectFit:"contain"}} />
+          display:"flex",alignItems:"center",gap:0}}>
+          <img src={I_LOGO} alt="HopHrad logo"
+            style={{height:56,width:"auto",objectFit:"contain",mixBlendMode:"screen"}}/>
         </button>
+
         <ul className="dlink" style={{display:"flex",gap:2,listStyle:"none"}}>
           {links.map(([l,p])=>(
             <li key={p}><button onClick={()=>go(p)} style={{
@@ -138,7 +149,9 @@ function NavBar({page,go}){
             }}>{l}</button></li>
           ))}
         </ul>
+
         <span className="dbtn"><Btn onClick={()=>go("kontakt")} size="sm">📅 Rezervovat</Btn></span>
+
         <button className="hmenu" onClick={()=>setOpen(o=>!o)} aria-label={open?"Zavřít":"Menu"}>
           {[0,1,2].map(i=><span key={i} style={{display:"block",width:22,height:2.5,borderRadius:2,
             transition:"all .22s",background:onHero?"#fff":TX,
@@ -167,19 +180,24 @@ function TrustBar(){
     ["🛡️","CE certifikát EN 14960","Bezpečnost ověřena"],
     ["🚚","Prvních 10 km zdarma","Zbytek dle kalkulačky"],
     ["🏗️","Instalace ZDARMA","My vše připravíme"],
-    ["⭐","100% spokojených","Stovky šťastných rodin"]
+    ["⭐","100% spokojených","Stovky šťastných rodin"],
   ];
   return(
     <div style={{background:P}}>
       <ul className="col4" style={{maxWidth:1200,margin:"0 auto",padding:"0 5%",
-        display:"grid",gridTemplateColumns:"repeat(4,1fr)",listStyle:"none"}}>
+        display:"grid",gridTemplateColumns:"repeat(4,1fr)",listStyle:"none",gap:0}}>
         {items.map(([icon,title,sub],i)=>(
-          <li key={i} style={{padding:"13px 8px 13px 0",
-            borderRight:i<3?"1px solid rgba(255,255,255,.14)":"none",
-            display:"flex",alignItems:"center",gap:11}}>
-            <span style={{fontSize:22}}>{icon}</span>
-            <div>
-              <strong style={{display:"block",color:"#fff",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,fontWeight:800}}>{title}</strong>
+          <li key={i} style={{
+            padding:"14px 24px 14px 16px",
+            // Rozdělovač jako pseudo-border pomocí outline box-shadow
+            borderRight:i<3?"1px solid rgba(255,255,255,.18)":"none",
+            display:"flex",alignItems:"center",gap:13}}>
+            <span style={{fontSize:22,flexShrink:0}}>{icon}</span>
+            <div style={{minWidth:0}}>
+              <strong style={{display:"block",color:"#fff",fontFamily:"'Plus Jakarta Sans',sans-serif",
+                fontSize:12,fontWeight:800,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                {title}
+              </strong>
               <span style={{color:"rgba(255,255,255,.65)",fontSize:11}}>{sub}</span>
             </div>
           </li>
@@ -338,12 +356,8 @@ function Home({go}){
                   </div>
                 ))}
               </div>
-              <a href={I_CERT} download="ce-certifikat-hophrad.pdf"
-                style={{display:"inline-flex",alignItems:"center",gap:8,background:PL,
-                  color:PD,padding:"11px 18px",borderRadius:10,fontWeight:800,fontSize:13,
-                  border:`1px solid ${PLM}`,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-                📄 Stáhnout CE certifikát EN 14960
-              </a>
+              {/* Certifikát — otevřít v novém okně */}
+              <CertLink/>
             </div>
           </div>
         </div>
@@ -379,7 +393,7 @@ function Home({go}){
               </div>
               <div style={{background:"rgba(167,139,250,.12)",borderRadius:12,padding:"11px 15px",marginBottom:22}}>
                 <p style={{color:"rgba(255,255,255,.6)",fontSize:13,lineHeight:1.65}}>
-                  ✓ Instalace zdarma &nbsp;·&nbsp; ✓ Prvních 10 km zdarma &nbsp;·&nbsp; ✓ 2. den −50 %
+                  ✓ Instalace zdarma &nbsp;·&nbsp; ✓ Prvních 10 km zdarma &nbsp;·&nbsp; ✓ 2. den −25 %
                 </p>
               </div>
               <div className="ctar" style={{display:"flex",gap:10}}>
@@ -445,7 +459,7 @@ function Home({go}){
             {[
               {label:"Všední den",price:"3 000",unit:"Kč / den",icon:"📅",note:"Pondělí – Čtvrtek",featured:false},
               {label:"Víkend / Svátek",price:"5 000",unit:"Kč / den",icon:"🎉",note:"Pátek – Neděle, svátky",featured:true},
-              {label:"2. den v řadě",price:"−50 %",unit:"sleva z ceny",icon:"💡",note:"Při rezervaci 2+ po sobě",featured:false},
+              {label:"2. den v řadě",price:"−25 %",unit:"sleva z ceny",icon:"💡",note:"Při rezervaci 2+ po sobě",featured:false},
             ].map(({label,price,unit,icon,note,featured})=>(
               <div key={label} style={{background:featured?P:SRF,borderRadius:20,padding:"30px 24px",
                 textAlign:"center",border:featured?"none":`1px solid ${BRD}`,
@@ -519,9 +533,10 @@ function Home({go}){
       <section className="sec" style={{padding:"80px 5%",background:SRFL}}>
         <div style={{maxWidth:1200,margin:"0 auto",textAlign:"center"}}>
           <Chip>Zákazníci říkají</Chip>
-          <h2 style={{fontSize:"clamp(24px,4vw,38px)",fontWeight:900,color:TX,margin:"14px 0 40px",letterSpacing:-.5}}>
-            Stovky spokojených rodin
+          <h2 style={{fontSize:"clamp(24px,4vw,38px)",fontWeight:900,color:TX,margin:"14px 0 6px",letterSpacing:-.5}}>
+            Stovky spokojených rodin —
           </h2>
+          <p style={{color:MUT,fontSize:17,marginBottom:36}}>a hlavně dětí! 🎈</p>
           <div className="col3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,marginBottom:40}}>
             {[
               {name:"Petra K.",loc:"Liberec",text:"Skvělá služba! Hrad přivezli načas, děti byly nadšené celé odpoledne. Vřele doporučuji všem rodičům!"},
@@ -593,7 +608,7 @@ function Home({go}){
           </p>
           <div className="ctar" style={{display:"flex",justifyContent:"center",gap:12}}>
             <Btn onClick={()=>go("kontakt")} size="lg">📅 Chci rezervovat termín</Btn>
-            <Btn onClick={()=>go("hrady")} variant="soft" size="lg"
+            <Btn onClick={()=>go("hrady")} size="lg"
               s={{background:"rgba(124,58,237,.09)",border:`1px solid ${PLM}`,color:PD,boxShadow:"none"}}>
               Prohlédnout hrady
             </Btn>
@@ -604,13 +619,20 @@ function Home({go}){
   );
 }
 
+// Celá karta hradů je klikatelná (ne jen tlačítko dole)
 function CastleCard({img,name,price,size,capacity,tag,tagBg,tagColor,desc,onDetail,disabled}){
   const [hov,setHov]=useState(false);
+  const handleClick=()=>{ if(!disabled&&onDetail) onDetail(); };
   return(
-    <article onMouseEnter={()=>!disabled&&setHov(true)} onMouseLeave={()=>setHov(false)}
+    <article
+      onClick={handleClick}
+      onMouseEnter={()=>!disabled&&setHov(true)}
+      onMouseLeave={()=>setHov(false)}
       style={{borderRadius:20,overflow:"hidden",background:SRF,border:`1px solid ${BRD}`,
         transition:"transform .22s, box-shadow .22s",
-        transform:hov?"translateY(-5px)":"none",opacity:disabled?0.65:1,
+        cursor:disabled?"default":"pointer",
+        transform:hov?"translateY(-5px)":"none",
+        opacity:disabled?0.65:1,
         boxShadow:hov?"0 16px 38px rgba(124,58,237,.15)":"0 3px 10px rgba(0,0,0,.05)"}}>
       <div style={{position:"relative",aspectRatio:"4/3",overflow:"hidden"}}>
         <img src={img} alt={`${name} – pronájem skákacího hradu Liberec`} loading="lazy"
@@ -634,12 +656,12 @@ function CastleCard({img,name,price,size,capacity,tag,tagBg,tagColor,desc,onDeta
           </div>
         )}
         {!disabled&&(
-          <button onClick={onDetail} style={{width:"100%",padding:"10px",borderRadius:10,
-            background:hov?P:SRFM,color:hov?"#fff":TX,border:"none",cursor:"pointer",
+          <div style={{width:"100%",padding:"10px",borderRadius:10,textAlign:"center",
+            background:hov?P:SRFM,color:hov?"#fff":TX,
             fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:13,
             transition:"all .18s"}}>
             {hov?"Zobrazit detail →":"Detail hradu"}
-          </button>
+          </div>
         )}
         {disabled&&(
           <div style={{marginTop:12,textAlign:"center",fontSize:13,color:FAINT,fontStyle:"italic"}}>
@@ -707,9 +729,10 @@ function Hrady({go}){
                 <div style={{color:FAINT,fontSize:12}}>víkend / svátek</div>
               </div>
             </div>
+            {/* Specifikace — váha 120 kg, kapacita až 10 dětí, sleva 25 % */}
             <div className="col2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
               {[["📐 Velikost","5 × 5 m"],["📏 Výška","4 m"],["👶 Věk","3–13 let"],
-                ["👥 Kapacita","8 dětí"],["⚖️ Váha","100 kg"],["🔄 2. den","−50 % sleva"]].map(([l,v])=>(
+                ["👥 Kapacita","až 10 dětí"],["⚖️ Váha","120 kg"],["🔄 2. den","−25 % sleva"]].map(([l,v])=>(
                 <div key={l} style={{background:SRFL,borderRadius:10,padding:"10px 12px"}}>
                   <div style={{fontSize:11,color:FAINT,fontWeight:700,marginBottom:2}}>{l}</div>
                   <div style={{fontWeight:800,color:TX,fontSize:14}}>{v}</div>
@@ -718,7 +741,8 @@ function Hrady({go}){
             </div>
             <div style={{background:GBG,borderRadius:12,padding:"12px 15px",marginBottom:9}}>
               <div style={{fontWeight:800,color:GFG,marginBottom:6,fontSize:13}}>✓ V ceně pronájmu:</div>
-              {["Hrad + fukar","Instalace zdarma",
+              {["Hrad + fukar",
+                "Instalace zdarma",
                 "Doprava: prvních 10 km od Liberce zdarma, pak dle kalkulačky",
                 "Odvoz po akci zdarma"].map(item=>(
                 <div key={item} style={{display:"flex",alignItems:"flex-start",gap:6,marginBottom:4,fontSize:13,color:"#1a4731"}}>
@@ -733,7 +757,15 @@ function Hrady({go}){
               <Btn onClick={()=>go("kontakt")}>📅 Rezervovat LEGO Hrad</Btn>
               <Btn href="tel:+420774351097" variant="dark">📞 Zavolat</Btn>
             </div>
-
+            {/* Certifikát — nové okno */}
+            <div style={{marginBottom:28}}>
+              <a href={I_CERT} target="_blank" rel="noopener noreferrer"
+                style={{display:"inline-flex",alignItems:"center",gap:7,background:PL,
+                  color:PD,padding:"9px 16px",borderRadius:10,fontWeight:800,fontSize:13,
+                  border:`1px solid ${PLM}`,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+                📄 Zobrazit CE certifikát EN 14960
+              </a>
+            </div>
             {/* Kalkulačka dopravy v detailu */}
             <KalkulackaDopravy/>
           </div>
@@ -755,18 +787,9 @@ function Hrady({go}){
         </p>
       </header>
       <div style={{maxWidth:1200,margin:"0 auto",padding:"0 5% 80px"}}>
-        {/* Dostupnost banner — jen pro LEGO */}
-        <div style={{background:SRFM,borderRadius:13,padding:"13px 18px",marginBottom:28,
-          display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,
-          flexWrap:"wrap",border:`1px solid ${PLM}`}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <span style={{background:GFG,borderRadius:9999,width:8,height:8,display:"inline-block"}}/>
-            <strong style={{fontSize:14}}>🧱 LEGO Hrad je momentálně dostupný</strong>
-          </div>
-          <Btn onClick={()=>go("kontakt")} size="sm">📅 Ověřit termín</Btn>
-        </div>
+        {/* Banner "dostupný" odstraněn dle požadavku */}
         <div className="col3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20}}>
-          <CastleCard img={I_HRAD5} name="🧱 LEGO Hrad" price="3 000" size="5×5 m" capacity="8 dětí"
+          <CastleCard img={I_HRAD5} name="🧱 LEGO Hrad" price="3 000" size="5×5 m" capacity="až 10 dětí"
             tag="✓ Dostupný" tagBg={GBG} tagColor={GFG}
             desc="Skluzavka, překážky, skákací plocha. Pro věk 3–13 let."
             onDetail={openDetail} disabled={false}/>
@@ -786,6 +809,7 @@ function Hrady({go}){
 
 function Kontakt({go}){
   const [sent,setSent]=useState(false);
+  const [mistoAkce,setMistoAkce]=useState("");
   const submit=e=>{e.preventDefault();setSent(true);setTimeout(()=>setSent(false),5000)};
   const inputStyle={width:"100%",background:SRFL,border:`1px solid ${BRD}`,borderRadius:10,
     padding:"12px 13px",fontSize:14,outline:"none",transition:"border .15s",boxSizing:"border-box"};
@@ -814,12 +838,15 @@ function Kontakt({go}){
         </div>
       </header>
 
-      {/* Kalkulačka dopravy nad formulářem */}
+      {/* Kalkulačka dopravy — na kontaktu omezena na max 680px */}
       <div style={{maxWidth:1200,margin:"0 auto",padding:"52px 5% 0"}}>
-        <div style={{marginBottom:8}}>
+        <div style={{marginBottom:10}}>
           <Chip>Krok 1 — Zjistěte cenu dopravy</Chip>
         </div>
-        <KalkulackaDopravy/>
+        {/* maxWidth:680 zabraňuje přílišné šířce na velkých obrazovkách */}
+        <div style={{maxWidth:680}}>
+          <KalkulackaDopravy/>
+        </div>
       </div>
 
       <div id="kontakt-formular" className="kgrid" style={{maxWidth:1200,margin:"0 auto",
@@ -860,9 +887,26 @@ function Kontakt({go}){
                     <input required type="date" min={new Date().toISOString().split("T")[0]} style={inputStyle} onFocus={fi} onBlur={fo}/>
                   </div>
                 </div>
+                {/* Nová kolonka Místo akce — dle kalkulačky výše */}
                 <div>
-                  <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>Zpráva (místo konání, počet dětí…)</label>
-                  <textarea rows={4} placeholder="Adresa místa konání, speciální požadavky, počet dětí..."
+                  <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>
+                    Místo akce
+                    <span style={{fontWeight:400,color:FAINT,marginLeft:6}}>(vyplňte z kalkulačky výše nebo ručně)</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="misto-akce"
+                    value={mistoAkce}
+                    onChange={e=>setMistoAkce(e.target.value)}
+                    placeholder="Ulice a číslo, město, PSČ"
+                    style={inputStyle}
+                    onFocus={fi}
+                    onBlur={fo}
+                  />
+                </div>
+                <div>
+                  <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>Zpráva (počet dětí, speciální požadavky…)</label>
+                  <textarea rows={4} placeholder="Počet dětí, speciální požadavky..."
                     style={{...inputStyle,resize:"vertical",borderRadius:10}} onFocus={fi} onBlur={fo}/>
                 </div>
                 <div className="ctar" style={{display:"flex",alignItems:"center",gap:14,paddingTop:2,flexWrap:"wrap"}}>
@@ -896,9 +940,10 @@ function Kontakt({go}){
               Splňuje <strong>EN 14960-1:2019</strong> a <strong>ISO 9001:2015</strong>.
               PVC Terpaulin 1000D.
             </p>
-            <a href={I_CERT} download="ce-certifikat-hophrad.pdf"
+            {/* Certifikát — nové okno */}
+            <a href={I_CERT} target="_blank" rel="noopener noreferrer"
               style={{display:"inline-flex",alignItems:"center",gap:5,color:P,fontWeight:700,fontSize:13}}>
-              📄 Stáhnout CE certifikát
+              📄 Zobrazit CE certifikát
             </a>
           </div>
           <div style={{background:SRFM,borderRadius:13,padding:"14px 16px",border:`1px solid ${PLM}`}}>
@@ -1006,8 +1051,7 @@ function GdprPage({go}){
           </h3>
           <p style={{color:MUT,fontSize:14,lineHeight:1.75,marginBottom:16}}>
             Shromažďujeme kontaktní osoby zákazníků pro zákonné CRM a plnění smluvních závazků.
-            Osobní údaje zákazníků mohou být zpracovány pro přímý marketing — zasílání obchodních sdělení.
-            Subjekt má právo kdykoli odmítnout.
+            Subjekt má právo kdykoli odmítnout zasílání obchodních sdělení.
           </p>
           <h3 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:16,fontWeight:800,color:TX,marginBottom:12}}>
             3) Souhlas – čl. 6 odst. 1 písm. a)
@@ -1057,7 +1101,10 @@ function GdprPage({go}){
           </div>
           <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
             <Btn href="mailto:info@hophrad.cz" size="sm">✉️ info@hophrad.cz</Btn>
-            <Btn href="tel:+420774351097" size="sm" s={{background:"rgba(255,255,255,.1)",boxShadow:"none",border:"1px solid rgba(255,255,255,.2)"}}>📞 774 351 097</Btn>
+            <Btn href="tel:+420774351097" size="sm"
+              s={{background:"rgba(255,255,255,.1)",boxShadow:"none",border:"1px solid rgba(255,255,255,.2)"}}>
+              📞 774 351 097
+            </Btn>
           </div>
         </div>
       </div>
@@ -1072,8 +1119,9 @@ function Footer({go}){
       <div style={{maxWidth:1200,margin:"0 auto"}}>
         <div className="fgrid" style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1.2fr",gap:40,marginBottom:40}}>
           <div>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-              <img src={I_LOGO} alt="HopHrad logo" style={{height:44,width:"auto",objectFit:"contain"}}/>
+            <div style={{marginBottom:14}}>
+              <img src={I_LOGO} alt="HopHrad logo"
+                style={{height:52,width:"auto",objectFit:"contain",mixBlendMode:"screen"}}/>
             </div>
             <p style={{color:"rgba(255,255,255,.42)",fontSize:14,lineHeight:1.8}}>
               Pronájem nafukovacích skákacích hradů v&nbsp;Liberci a okolí.
@@ -1102,7 +1150,8 @@ function Footer({go}){
           <div>
             <h3 style={{color:"rgba(255,255,255,.28)",fontSize:11,fontWeight:800,letterSpacing:2,
               textTransform:"uppercase",marginBottom:16}}>Certifikát</h3>
-            <a href={I_CERT} download="ce-certifikat-hophrad.pdf"
+            {/* Certifikát — otevřít v novém okně */}
+            <a href={I_CERT} target="_blank" rel="noopener noreferrer"
               style={{display:"inline-flex",alignItems:"center",gap:7,background:"rgba(124,58,237,.2)",
                 color:"#c4b5fd",border:"1px solid rgba(124,58,237,.35)",padding:"9px 14px",
                 borderRadius:12,fontSize:13,fontWeight:700,marginBottom:10,width:"100%"}}>
