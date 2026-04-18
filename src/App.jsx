@@ -11,6 +11,11 @@
 //   - Kalkulačka v kontaktu: maxWidth 680px
 //   - Formulář: nová kolonka "Místo akce"
 
+import { useState, useEffect, useRef } from "react"; // Přidej useRef, pokud tam není
+import emailjs from "@emailjs/browser"; // <--- TENTO ŘÁDEK PŘIDEJ SEM
+import KalkulackaDopravy from "./KalkulackaDopravy";
+// ... zbytek tvých importů (loga, obrázky atd.)
+
 import { useState, useEffect } from "react";
 import KalkulackaDopravy from "./KalkulackaDopravy";
 
@@ -866,54 +871,58 @@ function Kontakt({go}){
                 <p style={{color:"#166534aa",marginTop:8,fontSize:14}}>Ozveme se vám co nejdříve.</p>
               </div>
             ):(
-              <form onSubmit={submit} noValidate style={{display:"flex",flexDirection:"column",gap:14}}>
-                <div className="col2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                  <div>
-                    <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>Jméno a příjmení</label>
-                    <input required type="text" placeholder="Jan Novák" autoComplete="name" style={inputStyle} onFocus={fi} onBlur={fo}/>
-                  </div>
-                  <div>
-                    <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>E-mail</label>
-                    <input required type="email" placeholder="jan@example.cz" autoComplete="email" style={inputStyle} onFocus={fi} onBlur={fo}/>
-                  </div>
-                </div>
-                <div className="col2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                  <div>
-                    <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>Telefon</label>
-                    <input type="tel" placeholder="+420 774 351 097" autoComplete="tel" style={inputStyle} onFocus={fi} onBlur={fo}/>
-                  </div>
-                  <div>
-                    <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>Datum akce</label>
-                    <input required type="date" min={new Date().toISOString().split("T")[0]} style={inputStyle} onFocus={fi} onBlur={fo}/>
-                  </div>
-                </div>
-                {/* Nová kolonka Místo akce — dle kalkulačky výše */}
-                <div>
-                  <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>
-                    Místo akce
-                    <span style={{fontWeight:400,color:FAINT,marginLeft:6}}>(vyplňte z kalkulačky výše nebo ručně)</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="misto-akce"
-                    value={mistoAkce}
-                    onChange={e=>setMistoAkce(e.target.value)}
-                    placeholder="Ulice a číslo, město, PSČ"
-                    style={inputStyle}
-                    onFocus={fi}
-                    onBlur={fo}
-                  />
-                </div>
-                <div>
-                  <label style={{display:"block",fontSize:12,fontWeight:700,color:MUT,marginBottom:5}}>Zpráva (počet dětí, speciální požadavky…)</label>
-                  <textarea rows={4} placeholder="Počet dětí, speciální požadavky..."
-                    style={{...inputStyle,resize:"vertical",borderRadius:10}} onFocus={fi} onBlur={fo}/>
-                </div>
-                <div className="ctar" style={{display:"flex",alignItems:"center",gap:14,paddingTop:2,flexWrap:"wrap"}}>
-                  <Btn>Odeslat poptávku →</Btn>
-                  <span style={{color:FAINT,fontSize:13}}>✅ Odpovídáme rychle</span>
-                </div>
-              </form>
+              <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+  <div className="col2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+    <div>
+      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Jméno a příjmení</label>
+      <input name="user_name" required type="text" placeholder="Jan Novák" autoComplete="name" style={inputStyle} onFocus={fi} onBlur={fo} />
+    </div>
+    <div>
+      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>E-mail</label>
+      <input name="user_email" required type="email" placeholder="jan@example.cz" autoComplete="email" style={inputStyle} onFocus={fi} onBlur={fo} />
+    </div>
+  </div>
+  <div className="col2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+    <div>
+      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Telefon</label>
+      <input name="user_phone" type="tel" placeholder="+420 774 351 097" autoComplete="tel" style={inputStyle} onFocus={fi} onBlur={fo} />
+    </div>
+    <div>
+      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Datum akce</label>
+      <input name="action_date" required type="date" min={new Date().toISOString().split("T")[0]} style={inputStyle} onFocus={fi} onBlur={fo} />
+    </div>
+  </div>
+  {/* Kolonka Místo akce — name="action_place" zajistí přenos do e-mailu */}
+  <div>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>
+      Místo akce
+      <span style={{ fontWeight: 400, color: FAINT, marginLeft: 6 }}>(vyplňte z kalkulačky výše nebo ručně)</span>
+    </label>
+    <input
+      name="action_place"
+      type="text"
+      id="misto-akce"
+      value={mistoAkce}
+      onChange={e => setMistoAkce(e.target.value)}
+      placeholder="Ulice a číslo, město, PSČ"
+      style={inputStyle}
+      onFocus={fi}
+      onBlur={fo}
+    />
+  </div>
+  <div>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 5 }}>Zpráva (počet dětí, speciální požadavky…)</label>
+    <textarea name="message" rows={4} placeholder="Počet dětí, speciální požadavky..."
+      style={{ ...inputStyle, resize: "vertical", borderRadius: 10 }} onFocus={fi} onBlur={fo} />
+  </div>
+  <div className="ctar" style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 2, flexWrap: "wrap" }}>
+    {/* Tlačítko teď reaguje na stav loading */}
+    <Btn disabled={loading}>
+      {loading ? "Odesílám..." : "Odeslat poptávku →"}
+    </Btn>
+    <span style={{ color: FAINT, fontSize: 13 }}>✅ Odpovídáme rychle</span>
+  </div>
+</form>
             )}
           </div>
         </section>
