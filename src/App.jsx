@@ -11,11 +11,11 @@
 //   - Kalkulačka v kontaktu: maxWidth 680px
 //   - Formulář: nová kolonka "Místo akce"
 
-import { useState, useEffect, useRef } from "react"; // Přidej useRef, pokud tam není
-import emailjs from "@emailjs/browser"; // <--- TENTO ŘÁDEK PŘIDEJ SEM
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import emailjs from "@emailjs/browser";
 import KalkulackaDopravy from "./KalkulackaDopravy";
+
+// Tady už začínají tvoje obrázky...
 
 import I_LOGO    from "./assets/logo.png";
 import I_HRAD1   from "./assets/hrad1.png";
