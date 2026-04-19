@@ -139,7 +139,7 @@ function NavBar({page,go}){
         <button onClick={()=>go("home")} style={{background:"none",border:"none",cursor:"pointer",
           display:"flex",alignItems:"center",gap:0}}>
           <img src={I_LOGO} alt="HopHrad logo"
-            style={{height:56,width:"auto",objectFit:"contain",mixBlendMode:"screen"}}/>
+            style={{height:86,width:"auto",objectFit:"contain",mixBlendMode:"screen"}}/>
         </button>
 
         <ul className="dlink" style={{display:"flex",gap:2,listStyle:"none"}}>
@@ -1150,7 +1150,7 @@ function Footer({go}){
           <div>
             <div style={{marginBottom:14}}>
               <img src={I_LOGO} alt="HopHrad logo"
-                style={{height:52,width:"auto",objectFit:"contain",mixBlendMode:"screen"}}/>
+                style={{height:82,width:"auto",objectFit:"contain",mixBlendMode:"screen"}}/>
             </div>
             <p style={{color:"rgba(255,255,255,.42)",fontSize:14,lineHeight:1.8}}>
               Pronájem nafukovacích skákacích hradů v&nbsp;Liberci a okolí.
